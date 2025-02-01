@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criador de Fichas para LAFTAT</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</head>
+<body>
+  <div class="container">
+    <h1>Criador de Fichas</h1>
+    <form id="characterForm">
+      <!-- Informações Básicas -->
+      <div class="section basic-info">
+        <h2>Informações Básicas</h2>
+        <div class="input-group">
+          <label for="name">Nome:</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+        <div class="input-group">
+          <label for="race">Raça:</label>
+          <input type="text" id="race" name="race" required>
+        </div>
+        <div class="input-group">
+          <label for="class">Classe:</label>
+          <input type="text" id="class" name="class" required>
+        </div>
+        <div class="input-group">
+          <label for="alignment">Alinhamento:</label>
+          <input type="text" id="alignment" name="alignment" placeholder="Ex: Caótico Neutro">
+        </div>
+        <div class="input-group">
+          <label for="age">Idade:</label>
+          <input type="number" id="age" name="age" min="1">
+        </div>
+        <div class="input-group">
+          <label for="height">Altura (metros):</label>
+          <input type="number" step="0.01" id="height" name="height" min="0">
+        </div>
+        <div class="input-group">
+          <label for="weight">Peso (kg):</label>
+          <input type="number" id="weight" name="weight" min="0">
+        </div>
+        <div class="input-group">
+          <label for="eyes">Olhos:</label>
+          <input type="text" id="eyes" name="eyes" placeholder="Ex: Castanho (esquerdo), Olho Carmesim (direito)">
+        </div>
+        <div class="input-group">
+          <label for="hair">Cabelos:</label>
+          <input type="text" id="hair" name="hair" placeholder="Ex: Curtos e grisalhos">
+        </div>
+        <div class="input-group">
+          <label for="skin">Pele:</label>
+          <input type="text" id="skin" name="skin" placeholder="Ex: Marcada por cicatrizes e tatuagens">
+        </div>
+        <div class="input-group">
+          <label for="background">Pano de Fundo:</label>
+          <input type="text" id="background" name="background" placeholder="Ex: Ex-Marechal da Guilda Primordial">
+        </div>
+      </div>
+
+      <!-- Atributos -->
+      <div class="section attributes-section">
+        <h2>Atributos</h2>
+        <div class="attributes-container">
+          <div class="attribute">
+            <label for="strength">Força:</label>
+            <input type="number" id="strength" name="strength" min="1" max="20" required>
+          </div>
+          <div class="attribute">
+            <label for="dexterity">Destreza:</label>
+            <input type="number" id="dexterity" name="dexterity" min="1" max="20" required>
+          </div>
+          <div class="attribute">
+            <label for="constitution">Constituição:</label>
+            <input type="number" id="constitution" name="constitution" min="1" max="20" required>
+          </div>
+          <div class="attribute">
+            <label for="intelligence">Inteligência:</label>
+            <input type="number" id="intelligence" name="intelligence" min="1" max="20" required>
+          </div>
+          <div class="attribute">
+            <label for="wisdom">Sabedoria:</label>
+            <input type="number" id="wisdom" name="wisdom" min="1" max="20" required>
+          </div>
+          <div class="attribute">
+            <label for="charisma">Carisma:</label>
+            <input type="number" id="charisma" name="charisma" min="1" max="20" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pontos de Vida e CA -->
+      <div class="section stats-section">
+        <h2>Pontos de Vida e Classe de Armadura</h2>
+        <div class="stats-container">
+          <div class="stat">
+            <label for="hp">Pontos de Vida (PV):</label>
+            <input type="number" id="hp" name="hp" min="1" required>
+          </div>
+          <div class="stat">
+            <label for="ac">Classe de Armadura (CA):</label>
+            <input type="number" id="ac" name="ac" min="1" required>
+          </div>
+          <div class="stat">
+            <label for="speed">Velocidade (metros):</label>
+            <input type="number" id="speed" name="speed" min="0" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Proficiências -->
+      <div class="section proficiencies-section">
+        <h2>Proficiências</h2>
+        <div class="input-group">
+          <label for="savingThrows">Salvaguardas:</label>
+          <input type="text" id="savingThrows" name="savingThrows" placeholder="Ex: Força, Constituição">
+        </div>
+        <div class="input-group">
+          <label for="skills">Perícias:</label>
+          <input type="text" id="skills" name="skills" placeholder="Ex: Atletismo (+6), Intimidação (+3)">
+        </div>
+        <div class="input-group">
+          <label for="weapons">Armas:</label>
+          <input type="text" id="weapons" name="weapons" placeholder="Ex: Todas as armas simples e marciais">
+        </div>
+        <div class="input-group">
+          <label for="armors">Armaduras:</label>
+          <input type="text" id="armors" name="armors" placeholder="Ex: Leves, médias, pesadas e escudos">
+        </div>
+        <div class="input-group">
+          <label for="tools">Ferramentas:</label>
+          <input type="text" id="tools" name="tools" placeholder="Ex: Nenhuma">
+        </div>
+        <div class="input-group">
+          <label for="languages">Idiomas:</label>
+          <input type="text" id="languages" name="languages" placeholder="Ex: Comum, Dialeto da Guilda, Ignan">
+        </div>
+      </div>
+
+      <!-- Habilidades de Classe -->
+      <div class="section class-features-section">
+        <h2>Habilidades de Classe</h2>
+        <div class="input-group">
+          <label for="classFeatures">Habilidades Especiais:</label>
+          <textarea id="classFeatures" name="classFeatures" rows="4" placeholder="Descreva as habilidades especiais..."></textarea>
+        </div>
+      </div>
+
+      <!-- Equipamentos -->
+      <div class="section equipment-section">
+        <h2>Equipamentos</h2>
+        <div class="input-group">
+          <label for="equipment">Lista de Equipamentos:</label>
+          <textarea id="equipment" name="equipment" rows="4" placeholder="Descreva os equipamentos..."></textarea>
+        </div>
+      </div>
+
+      <!-- Artefato Único -->
+      <div class="section artifact-section">
+        <h2>Artefato Único</h2>
+        <div class="input-group">
+          <label for="artifactName">Nome do Artefato:</label>
+          <input type="text" id="artifactName" name="artifactName" placeholder="Ex: Olho Carmesim">
+        </div>
+        <div class="input-group">
+          <label for="artifactDescription">Descrição do Artefato:</label>
+          <textarea id="artifactDescription" name="artifactDescription" rows="4" placeholder="Descreva o poder e a origem do artefato..."></textarea>
+        </div>
+      </div>
+
+      <!-- Lore do Personagem -->
+      <div class="section lore-section">
+        <h2>Lore do Personagem</h2>
+        <div class="input-group">
+          <label for="lore">História e Background:</label>
+          <textarea id="lore" name="lore" rows="6" placeholder="Descreva a história do personagem..."></textarea>
+        </div>
+      </div>
+
+      <button type="submit">Salvar Personagem</button>
+    </form>
+
+    <h2>Fichas Salvas</h2>
+    <div id="savedCharacters"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
