@@ -1,21 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('characterForm');
   const savedCharactersDiv = document.getElementById('savedCharacters');
+  const themeToggle = document.getElementById('themeToggle');
 
   // Carregar personagens salvos do localStorage
   let savedCharacters = JSON.parse(localStorage.getItem('characters')) || [];
 
+  // Função para salvar um novo personagem
   function saveCharacter(character) {
     savedCharacters.push(character);
     localStorage.setItem('characters', JSON.stringify(savedCharacters));
     renderCharacters();
   }
 
+  // Função para excluir um personagem
+  function deleteCharacter(index) {
+    savedCharacters.splice(index, 1); // Remove o personagem pelo índice
+    localStorage.setItem('characters', JSON.stringify(savedCharacters)); // Atualiza o localStorage
+    renderCharacters(); // Re-renderiza as fichas
+  }
+
+  // Função para renderizar as fichas salvas
   function renderCharacters() {
-    savedCharactersDiv.innerHTML = '';
+    savedCharactersDiv.innerHTML = ''; // Limpa a área de exibição
+
     savedCharacters.forEach((character, index) => {
       const card = document.createElement('div');
       card.classList.add('character-card');
+
+      // Exibir os detalhes da ficha
       card.innerHTML = `
         <strong>${character.name}</strong> (${character.race} - ${character.class})
         <br>
@@ -53,23 +66,45 @@ document.addEventListener('DOMContentLoaded', () => {
         Descrição do Artefato: ${character.artifactDescription || 'N/A'}
         <br>
         Lore: ${character.lore || 'N/A'}
-        <button class="export-button" data-index="${index}">Exportar como PDF</button>
+        <div class="action-buttons">
+          <button class="export-button" data-index="${index}">PDF</button>
+          <button class="word-export-button" data-index="${index}">WORD</button>
+          <button class="delete-button" data-index="${index}">EXCLUIR</button>
+        </div>
       `;
       savedCharactersDiv.appendChild(card);
     });
 
-    // Adicionar evento de clique aos botões de exportação
+    // Adicionar eventos de clique aos botões de exportação
     document.querySelectorAll('.export-button').forEach(button => {
       button.addEventListener('click', (e) => {
         const index = e.target.getAttribute('data-index');
         exportToPDF(savedCharacters[index]);
       });
     });
+
+    // Adicionar eventos de clique aos botões de exportação para Word
+    document.querySelectorAll('.word-export-button').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const index = e.target.getAttribute('data-index');
+        exportToWord(savedCharacters[index]);
+      });
+    });
+
+    // Adicionar eventos de clique aos botões de exclusão
+    document.querySelectorAll('.delete-button').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const index = e.target.getAttribute('data-index');
+        deleteCharacter(index);
+      });
+    });
   }
 
+  // Evento de envio do formulário
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
+    // Criar um objeto com os dados do formulário
     const character = {
       name: form.name.value,
       race: form.race.value,
@@ -102,23 +137,19 @@ document.addEventListener('DOMContentLoaded', () => {
       artifactName: form.artifactName.value,
       artifactDescription: form.artifactDescription.value,
       lore: form.lore.value,
+      image: form.characterImage.files[0] ? URL.createObjectURL(form.characterImage.files[0]) : null,
     };
 
+    // Salvar o personagem e limpar o formulário
     saveCharacter(character);
-
-    // Limpar o formulário
     form.reset();
   });
 
   // Função para exportar como PDF
   function exportToPDF(character) {
     const { jsPDF } = window.jspdf;
-
-    // Criar um novo documento PDF
     const doc = new jsPDF();
-
-    // Adicionar conteúdo ao PDF
-    let y = 10; // Posição vertical inicial
+    let y = 10;
     const lineSpacing = 10;
 
     doc.setFontSize(18);
@@ -145,9 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
     doc.text(`Pele: ${character.skin || 'N/A'}`, 10, y);
     y += lineSpacing;
     doc.text(`Pano de Fundo: ${character.background || 'N/A'}`, 10, y);
-    y += lineSpacing + 5;
-
-    doc.text(`Atributos:`, 10, y);
     y += lineSpacing;
     doc.text(`Força: ${character.strength}`, 10, y);
     y += lineSpacing;
@@ -160,44 +188,71 @@ document.addEventListener('DOMContentLoaded', () => {
     doc.text(`Sabedoria: ${character.wisdom}`, 10, y);
     y += lineSpacing;
     doc.text(`Carisma: ${character.charisma}`, 10, y);
-    y += lineSpacing + 5;
-
-    doc.text(`Pontos de Vida: ${character.hp}`, 10, y);
     y += lineSpacing;
-    doc.text(`Classe de Armadura: ${character.ac}`, 10, y);
+    doc.text(`PV: ${character.hp}`, 10, y);
+    y += lineSpacing;
+    doc.text(`CA: ${character.ac}`, 10, y);
     y += lineSpacing;
     doc.text(`Velocidade: ${character.speed || 'N/A'}m`, 10, y);
-    y += lineSpacing + 5;
 
-    doc.text(`Salvaguardas: ${character.savingThrows || 'N/A'}`, 10, y);
-    y += lineSpacing;
-    doc.text(`Perícias: ${character.skills || 'N/A'}`, 10, y);
-    y += lineSpacing;
-    doc.text(`Armas: ${character.weapons || 'N/A'}`, 10, y);
-    y += lineSpacing;
-    doc.text(`Armaduras: ${character.armors || 'N/A'}`, 10, y);
-    y += lineSpacing;
-    doc.text(`Ferramentas: ${character.tools || 'N/A'}`, 10, y);
-    y += lineSpacing;
-    doc.text(`Idiomas: ${character.languages || 'N/A'}`, 10, y);
-    y += lineSpacing + 5;
-
-    doc.text(`Habilidades de Classe: ${character.classFeatures || 'N/A'}`, 10, y);
-    y += lineSpacing + 5;
-
-    doc.text(`Equipamentos: ${character.equipment || 'N/A'}`, 10, y);
-    y += lineSpacing + 5;
-
-    doc.text(`Artefato Único: ${character.artifactName || 'N/A'}`, 10, y);
-    y += lineSpacing;
-    doc.text(`Descrição do Artefato: ${character.artifactDescription || 'N/A'}`, 10, y);
-    y += lineSpacing + 5;
-
-    doc.text(`Lore: ${character.lore || 'N/A'}`, 10, y);
-
-    // Salvar o PDF
     doc.save(`${character.name}_Ficha.pdf`);
   }
+
+  // Função para exportar como Word
+  function exportToWord(character) {
+    const template = `
+      Nome: ${character.name}
+      Raça: ${character.race}
+      Classe: ${character.class}
+      Alinhamento: ${character.alignment || 'N/A'}
+      Idade: ${character.age || 'N/A'}
+      Altura: ${character.height || 'N/A'}m
+      Peso: ${character.weight || 'N/A'}kg
+      Olhos: ${character.eyes || 'N/A'}
+      Cabelos: ${character.hair || 'N/A'}
+      Pele: ${character.skin || 'N/A'}
+      Pano de Fundo: ${character.background || 'N/A'}
+      Força: ${character.strength}
+      Destreza: ${character.dexterity}
+      Constituição: ${character.constitution}
+      Inteligência: ${character.intelligence}
+      Sabedoria: ${character.wisdom}
+      Carisma: ${character.charisma}
+      PV: ${character.hp}
+      CA: ${character.ac}
+      Velocidade: ${character.speed || 'N/A'}m
+      Salvaguardas: ${character.savingThrows || 'N/A'}
+      Perícias: ${character.skills || 'N/A'}
+      Armas: ${character.weapons || 'N/A'}
+      Armaduras: ${character.armors || 'N/A'}
+      Ferramentas: ${character.tools || 'N/A'}
+      Idiomas: ${character.languages || 'N/A'}
+      Habilidades de Classe: ${character.classFeatures || 'N/A'}
+      Equipamentos: ${character.equipment || 'N/A'}
+      Artefato Único: ${character.artifactName || 'N/A'}
+      Descrição do Artefato: ${character.artifactDescription || 'N/A'}
+      Lore: ${character.lore || 'N/A'}
+    `;
+
+    const zip = new JSZip();
+    const doc = new window.docxtemplater();
+    doc.loadZip(zip);
+    doc.setData({ content: template });
+
+    try {
+      doc.render();
+    } catch (error) {
+      console.error(error);
+    }
+
+    const out = doc.getZip().generate({ type: "blob" });
+    saveAs(out, `${character.name}_Ficha.docx`);
+  }
+
+  // Alternar Modo Escuro/Claro
+  themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('light-mode');
+  });
 
   // Renderizar os personagens salvos ao carregar a página
   renderCharacters();
